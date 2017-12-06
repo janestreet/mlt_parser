@@ -18,7 +18,7 @@ depends: [
 ]
 available: [ ocaml-version >= "4.04.1" ]
 descr: "
-Parsing of toplevel files
+Parsing of top-expect files
 
 Mlt_parser contains functions for parsing .mlt files (which contain OCaml toplevel
 sessions) both to power toplevel expect tests and to support a tool that converts
