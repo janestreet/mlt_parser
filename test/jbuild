@@ -1,0 +1,13 @@
+(library (
+  (name mlt_parser_test)
+  (libraries
+   (core_kernel
+    expect_test_helpers
+    expect_test_patdiff
+    mlt_parser
+    compiler-libs.common
+    ))
+  (preprocess (pps (ppx_jane ppx_driver.runner)))))
+
+
+(jbuild_version 1)

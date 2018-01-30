@@ -4,6 +4,8 @@
   (libraries (
     core_kernel
     ppx_expect.matcher
+    compiler-libs.common
+    pcre
     ppx_expect.payload
     ))
   (preprocess (pps (ppx_jane ppx_driver.runner)))))
