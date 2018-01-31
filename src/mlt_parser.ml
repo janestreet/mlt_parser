@@ -29,7 +29,7 @@ type chunk =
   ; phrases_loc : Location.t
   }
 
-let split_chunks ~fname phrases =
+let split_chunks ~fname ~allow_output_patterns phrases =
   let rec loop ~loc_start ~part phrases code_acc acc =
     match phrases with
     | [] ->
@@ -48,7 +48,7 @@ let split_chunks ~fname phrases =
             let e =
               { phrases     = List.rev code_acc
               ; expectation = Expectation.map_pretty (f ~extension_id_loc:(fst ext).loc)
-                                ~f:Lexer.parse_pretty
+                                ~f:(Lexer.parse_pretty ~allow_output_patterns)
               ; phrases_loc =
                   { loc_start
                   ; loc_end   = loc.loc_start
@@ -223,7 +223,7 @@ let parse phrases ~contents =
             | (None, Some f) ->
               assert_no_attributes attrs;
               let expectation = Expectation.map_pretty (f ~extension_id_loc:(fst ext).loc)
-                                  ~f:Lexer.parse_pretty
+                                  ~f:(Lexer.parse_pretty ~allow_output_patterns:false)
               in
               let body = render_expect expectation.body in
               Chunks.fixed chunks loc (`Expect body)

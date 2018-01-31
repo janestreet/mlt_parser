@@ -49,6 +49,7 @@ type chunk =
 *)
 val split_chunks
   :  fname:string
+  -> allow_output_patterns:bool
   -> toplevel_phrase list
   -> chunk list * (toplevel_phrase list * position * string option) option
 
