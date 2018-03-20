@@ -1,6 +1,6 @@
 module CamlLexer = Lexer
 open Core_kernel
-open Ppx_core.Light
+open Ppxlib
 open Expect_test_common.Std
 open Expect_test_matcher.Std
 

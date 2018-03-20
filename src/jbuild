@@ -7,10 +7,8 @@
     compiler-libs.common
     pcre
     ppx_expect.payload
+    ppxlib
     ))
   (preprocess (pps (ppx_jane ppxlib.runner)))))
-
-
-
 
 (jbuild_version 1)

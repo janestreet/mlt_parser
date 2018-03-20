@@ -1,6 +1,6 @@
 (** Code for parsing toplevel expect test files *)
 
-open Ppx_core.Light
+open Ppxlib
 open Expect_test_common.Std
 open Expect_test_matcher.Std
 
