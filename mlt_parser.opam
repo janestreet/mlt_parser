@@ -17,7 +17,7 @@ depends: [
   "pcre"
   "ppxlib"                  {>= "0.1.0"}
 ]
-available: [ ocaml-version >= "4.04.1" ]
+available: [ ocaml-version >= "4.06.1" ]
 descr: "
 Parsing of top-expect files
 

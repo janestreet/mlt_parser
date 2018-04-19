@@ -2,7 +2,7 @@
   (name mlt_parser_test)
   (libraries
    (core_kernel
-    ppx_ast
+    ppxlib
     expect_test_helpers
     expect_test_patdiff
     mlt_parser
