@@ -4,15 +4,15 @@ open Ppxlib
 open Expect_test_common.Std
 open Expect_test_matcher.Std
 
-let declare_extension name ~is_exact =
+let declare_extension name ~kind =
   Extension.Expert.declare name
     Extension.Context.structure_item
     (Ppx_expect_payload.pattern ())
-    (Ppx_expect_payload.make ~is_exact)
+    (Ppx_expect_payload.make ~kind)
 
 
-let expect       = declare_extension "expect"       ~is_exact:false
-let expect_exact = declare_extension "expect_exact" ~is_exact:true
+let expect       = declare_extension "expect"       ~kind:Normal
+let expect_exact = declare_extension "expect_exact" ~kind:Exact
 
 let expect_extensions = [expect; expect_exact]
 
@@ -92,6 +92,7 @@ let extract_by_loc contents (loc : Location.t) =
 let render_expect : _ Cst.t Expectation.Body.t -> string = function
   | Exact s -> s
   | Pretty cst -> Cst.to_string cst |> String.strip
+  | Unreachable -> assert false
 ;;
 
 let declare_org_extension name =
