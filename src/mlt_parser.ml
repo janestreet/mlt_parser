@@ -89,9 +89,10 @@ let extract_by_loc contents (loc : Location.t) =
   String.sub contents ~pos:start ~len:(stop - start)
 ;;
 
-let render_expect : _ Cst.t Expectation.Body.t -> string = function
-  | Exact s -> s
-  | Pretty cst -> Cst.to_string cst |> String.strip
+let render_expect_exn : _ Cst.t Expectation.Body.t -> string option = function
+  | Exact s -> Some s
+  | Pretty cst -> Some (Cst.to_string cst |> String.strip)
+  | Output -> None
   | Unreachable -> assert false
 ;;
 
@@ -226,8 +227,8 @@ let parse phrases ~contents =
               let expectation = Expectation.map_pretty (f ~extension_id_loc:(fst ext).loc)
                                   ~f:(Lexer.parse_pretty ~allow_output_patterns:false)
               in
-              let body = render_expect expectation.body in
-              Chunks.fixed chunks loc (`Expect body)
+              Option.iter (render_expect_exn expectation.body) ~f:(fun body ->
+                Chunks.fixed chunks loc (`Expect body))
             | None, None -> ()
             | Some _, Some _ ->
               let s = extract_by_loc contents loc in
