@@ -15,7 +15,6 @@ depends: [
   "ppx_expect"
   "ppx_jane"
   "dune"        {build & >= "1.5.1"}
-  "pcre"
   "ppxlib"      {>= "0.4.0"}
 ]
 synopsis: "Parsing of top-expect files"
