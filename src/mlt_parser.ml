@@ -92,7 +92,7 @@ let extract_by_loc contents (loc : Location.t) =
 
 let render_expect_exn : _ Cst.t Expectation.Body.t -> string option = function
   | Exact s -> Some s
-  | Pretty cst -> Some (Cst.to_string cst |> String.strip)
+  | Pretty cst -> Some (Cst.to_string cst)
   | Output -> None
   | Unreachable -> assert false
 ;;

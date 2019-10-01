@@ -44,7 +44,7 @@ some output.
     (** Toplevel documentation comment *)
 |contents};
   [%expect {xxx|
-    -1,28 +1,25
+    -1,25 +1,24
       [%%org{|
       * Title
       ** Subtitle|}];;
@@ -66,10 +66,7 @@ some output.
           (* Toplevel multi-line
        comment *)
           (* Toplevel (* nested *) comment *)
-    -|    [%%expect {|
-    -|some output.
-    +|    [%%expect {|some output.
-       Not the real thing.|}]
-
-          (** Toplevel documentation comment *) |xxx}];
+          [%%expect {|
+      some output.
+       Not the real thing. |xxx}];
 ;;
