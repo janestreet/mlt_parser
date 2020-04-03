@@ -1,8 +1,8 @@
 (** Code for parsing toplevel expect test files *)
 
 open Ppxlib
-open Expect_test_common.Std
-open Expect_test_matcher.Std
+open Expect_test_common
+open Expect_test_matcher
 
 type chunk =
   { part        : string option (** The part the chunk is in, None if it's not in any

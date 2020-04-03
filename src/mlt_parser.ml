@@ -2,8 +2,8 @@ module CamlLexer = Lexer
 open Core_kernel
 open Poly
 open Ppxlib
-open Expect_test_common.Std
-open Expect_test_matcher.Std
+open Expect_test_common
+open Expect_test_matcher
 
 let declare_extension name ~kind =
   Extension.Expert.declare name
