@@ -3,7 +3,7 @@ open! Import
 
 let round_trip contents =
   Lexing.from_string contents
-  |> Parse.use_file (module Ppxlib_ast.Selected_ast)
+  |> Ppxlib.Parse.use_file
   |> Mlt_parser.parse ~contents
   |> List.map ~f:(function
     | Org    body -> sprintf "[%%%%org{|%s|}]"     body
