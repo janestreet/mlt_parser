@@ -1,5 +1,5 @@
 module CamlLexer = Lexer
-open Core_kernel
+open Core
 open Poly
 open Ppxlib
 open Expect_test_common
