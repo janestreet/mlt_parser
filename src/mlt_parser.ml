@@ -1,4 +1,4 @@
-module CamlLexer = Lexer
+
 open Core
 open Poly
 open Ppxlib
