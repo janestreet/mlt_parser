@@ -1,4 +1,4 @@
 (library (name mlt_parser) (public_name mlt_parser)
- (libraries core_kernel.core ppx_expect.matcher compiler-libs.common
-  ppx_expect.payload ppxlib)
+ (libraries core ppx_expect.matcher compiler-libs.common ppx_expect.payload
+  ppxlib)
  (preprocess (pps ppx_jane)))
