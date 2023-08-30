@@ -6,15 +6,16 @@ let round_trip contents =
   |> Ppxlib.Parse.use_file
   |> Mlt_parser.parse ~contents
   |> List.map ~f:(function
-    | Org    body -> sprintf "[%%%%org{|%s|}]"     body
-    | Expect body -> sprintf "[%%%%expect {|%s|}]" body
-    | Code   body -> sprintf "%s"                body)
+       | Org body -> sprintf "[%%%%org{|%s|}]" body
+       | Expect body -> sprintf "[%%%%expect {|%s|}]" body
+       | Code body -> sprintf "%s" body)
   |> String.concat
   |> print_patdiff contents
 ;;
 
 let%expect_test "round-trip a file through mlt parser" =
-  round_trip {contents|
+  round_trip
+    {contents|
     [%%org {|
 * Title
 ** Subtitle|}];;
@@ -43,7 +44,8 @@ some output.
 
     (** Toplevel documentation comment *)
 |contents};
-  [%expect {xxx|
+  [%expect
+    {xxx|
     -1,25 +1,24
       [%%org{|
       * Title
@@ -68,5 +70,5 @@ some output.
           (* Toplevel (* nested *) comment *)
           [%%expect {|
       some output.
-       Not the real thing. |xxx}];
+       Not the real thing. |xxx}]
 ;;

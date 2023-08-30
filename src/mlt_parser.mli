@@ -5,9 +5,10 @@ open Expect_test_common
 open Expect_test_matcher
 
 type chunk =
-  { part        : string option (** The part the chunk is in, None if it's not in any
+  { part : string option
+      (** The part the chunk is in, None if it's not in any
                                     part. *)
-  ; phrases     : toplevel_phrase list
+  ; phrases : toplevel_phrase list
   ; expectation : Fmt.t Cst.t Expectation.t
   ; phrases_loc : Location.t
   }
@@ -58,7 +59,7 @@ type mlt_block =
   | Expect of string
   | Code of string
 [@@deriving sexp]
-;;
+
 (** Takes a list of toplevel phrases and the raw string they're embedded in and returns a
     list of labeled blocks, so that for instance the following raw toplevel code:
 
@@ -87,7 +88,4 @@ type mlt_block =
     and regular OCaml code blocks); everything else -- including toplevel comments -- is
     silently discarded.
 *)
-val parse
-  :  toplevel_phrase list
-  -> contents:string
-  -> mlt_block list
+val parse : toplevel_phrase list -> contents:string -> mlt_block list
