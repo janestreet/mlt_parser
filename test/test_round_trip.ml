@@ -69,6 +69,6 @@ some output.
        comment *)
           (* Toplevel (* nested *) comment *)
           [%%expect {|
-      some output.
-       Not the real thing. |xxx}]
+          some output.
+           Not the real thing. |xxx}]
 ;;

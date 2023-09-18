@@ -1,20 +1,38 @@
 open Core
 open Poly
 open Ppxlib
-open Expect_test_common
-open Expect_test_matcher
+open Ppx_expect_runtime
 
-let declare_extension name ~kind =
+type chunk =
+  { part : string option
+  ; phrases : toplevel_phrase list
+  ; test_node : Test_node.t
+  ; test_node_loc : Ppxlib.Location.t
+  ; phrases_loc : Location.t
+  }
+
+let declare_extension name constructor =
   Extension.Expert.declare
     name
     Extension.Context.structure_item
-    (Ppx_expect_payload.pattern ())
-    (Ppx_expect_payload.make ~kind)
+    (Ppx_expect.maybe_string_payload ())
+    (fun payload ~test_node_loc phrases_loc ~part ~phrases ->
+    let loc = Ppx_expect.compact_loc_of_ppxlib_location test_node_loc in
+    let test_node = constructor loc payload in
+    { part; phrases; test_node; test_node_loc; phrases_loc })
 ;;
 
-let expect = declare_extension "expect" ~kind:Normal
-let expect_exact = declare_extension "expect_exact" ~kind:Exact
+let expect = declare_extension "expect" Test_node.Create.expect
+let expect_exact = declare_extension "expect_exact" Test_node.Create.expect_exact
 let expect_extensions = [ expect; expect_exact ]
+
+let expect_node_formatting : Expect_node_formatting.t =
+  { indent = 0
+  ; always_on_own_line = true
+  ; extension_sigil = "%%"
+  ; attribute_sigil = "@@"
+  }
+;;
 
 let part_attr =
   Attribute.Floating.declare
@@ -24,14 +42,7 @@ let part_attr =
     (fun s -> s)
 ;;
 
-type chunk =
-  { part : string option
-  ; phrases : toplevel_phrase list
-  ; expectation : Fmt.t Cst.t Expectation.t
-  ; phrases_loc : Location.t
-  }
-
-let split_chunks ~fname ~allow_output_patterns phrases =
+let split_chunks ~fname phrases =
   let rec loop ~loc_start ~part phrases code_acc acc =
     match phrases with
     | [] ->
@@ -47,14 +58,11 @@ let split_chunks ~fname ~allow_output_patterns phrases =
           | Some f ->
             assert_no_attributes attrs;
             let e =
-              { phrases = List.rev code_acc
-              ; expectation =
-                  Expectation.map_pretty
-                    (f ~extension_id_loc:(fst ext).loc)
-                    ~f:(Lexer.parse_pretty ~allow_output_patterns)
-              ; phrases_loc = { loc_start; loc_end = loc.loc_start; loc_ghost = false }
-              ; part
-              }
+              f
+                ~test_node_loc:loc
+                { loc_start; loc_end = loc.loc_start; loc_ghost = false }
+                ~part
+                ~phrases:(List.rev code_acc)
             in
             loop phrases [] (e :: acc) ~loc_start:loc.loc_end ~part)
        | Ptop_def [ ({ pstr_desc = Pstr_attribute _; pstr_loc = loc } as item) ] ->
@@ -84,11 +92,9 @@ let extract_by_loc contents (loc : Location.t) =
   String.sub contents ~pos:start ~len:(stop - start)
 ;;
 
-let render_expect_exn : _ Cst.t Expectation.Body.t -> string option = function
-  | Exact s -> Some s
-  | Pretty cst -> Some (Cst.to_string cst)
-  | Output -> None
-  | Unreachable -> assert false
+let render_chunk : chunk -> string option =
+  fun { test_node; _ } ->
+  Test_node.For_mlt.expectation_of_t ~expect_node_formatting test_node
 ;;
 
 let declare_org_extension name =
@@ -217,12 +223,10 @@ let parse phrases ~contents =
            | Some body, None -> Chunks.fixed chunks loc (`Org body)
            | None, Some f ->
              assert_no_attributes attrs;
-             let expectation =
-               Expectation.map_pretty
-                 (f ~extension_id_loc:(fst ext).loc)
-                 ~f:(Lexer.parse_pretty ~allow_output_patterns:false)
+             let chunk =
+               f Ppxlib.Location.none ~test_node_loc:loc ~part:None ~phrases:[]
              in
-             Option.iter (render_expect_exn expectation.body) ~f:(fun body ->
+             Option.iter (render_chunk chunk) ~f:(fun body ->
                Chunks.fixed chunks loc (`Expect body))
            | None, None -> ()
            | Some _, Some _ ->

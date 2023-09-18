@@ -1,17 +1,19 @@
 (** Code for parsing toplevel expect test files *)
 
 open Ppxlib
-open Expect_test_common
-open Expect_test_matcher
+open Ppx_expect_runtime
 
 type chunk =
   { part : string option
       (** The part the chunk is in, None if it's not in any
                                     part. *)
   ; phrases : toplevel_phrase list
-  ; expectation : Fmt.t Cst.t Expectation.t
+  ; test_node : Test_node.t
+  ; test_node_loc : Ppxlib.Location.t
   ; phrases_loc : Location.t
   }
+
+val expect_node_formatting : Expect_node_formatting.t
 
 (** Recursively parses toplevel phrases (i.e., contiguous units of code separated by
     [;;]) into "chunks", one chunk per [%%expect] statement.
@@ -50,7 +52,6 @@ type chunk =
 *)
 val split_chunks
   :  fname:string
-  -> allow_output_patterns:bool
   -> toplevel_phrase list
   -> chunk list * (toplevel_phrase list * position * string option) option
 
