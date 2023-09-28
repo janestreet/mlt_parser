@@ -16,9 +16,9 @@ let declare_extension name constructor =
     name
     Extension.Context.structure_item
     (Ppx_expect.maybe_string_payload ())
-    (fun payload ~test_node_loc phrases_loc ~part ~phrases ->
+    (fun ~payload_loc payload ~test_node_loc phrases_loc ~part ~phrases ->
     let loc = Ppx_expect.compact_loc_of_ppxlib_location test_node_loc in
-    let test_node = constructor loc payload in
+    let test_node = constructor loc payload_loc payload in
     { part; phrases; test_node; test_node_loc; phrases_loc })
 ;;
 
