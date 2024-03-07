@@ -9,7 +9,7 @@ type chunk =
                                     part. *)
   ; phrases : toplevel_phrase list
   ; test_node : Test_node.t
-  ; test_node_loc : Ppxlib.Location.t
+  ; node_loc : Ppxlib.Location.t
   ; phrases_loc : Location.t
   }
 

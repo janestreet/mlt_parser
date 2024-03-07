@@ -7,24 +7,9 @@ type chunk =
   { part : string option
   ; phrases : toplevel_phrase list
   ; test_node : Test_node.t
-  ; test_node_loc : Ppxlib.Location.t
+  ; node_loc : Ppxlib.Location.t
   ; phrases_loc : Location.t
   }
-
-let declare_extension name constructor =
-  Extension.Expert.declare
-    name
-    Extension.Context.structure_item
-    (Ppx_expect.maybe_string_payload ())
-    (fun ~payload_loc payload ~test_node_loc phrases_loc ~part ~phrases ->
-    let loc = Ppx_expect.compact_loc_of_ppxlib_location test_node_loc in
-    let test_node = constructor loc payload_loc payload in
-    { part; phrases; test_node; test_node_loc; phrases_loc })
-;;
-
-let expect = declare_extension "expect" Test_node.Create.expect
-let expect_exact = declare_extension "expect_exact" Test_node.Create.expect_exact
-let expect_extensions = [ expect; expect_exact ]
 
 let expect_node_formatting : Expect_node_formatting.t =
   { indent = 0
@@ -33,6 +18,27 @@ let expect_node_formatting : Expect_node_formatting.t =
   ; attribute_sigil = "@@"
   }
 ;;
+
+let declare_extension name constructor =
+  Extension.Expert.declare
+    name
+    Extension.Context.structure_item
+    (Ppx_expect.maybe_string_payload ())
+    (fun ~located_payload ~node_loc phrases_loc ~part ~phrases ->
+    let test_node =
+      let node_loc = Ppx_expect.compact_loc_of_ppxlib_location node_loc in
+      constructor
+        ~formatting_flexibility:
+          (Expect_node_formatting.Flexibility.Flexible_modulo expect_node_formatting)
+        ~node_loc
+        ~located_payload
+    in
+    { part; phrases; test_node; node_loc; phrases_loc })
+;;
+
+let expect = declare_extension "expect" Test_node.Create.expect
+let expect_exact = declare_extension "expect_exact" Test_node.Create.expect_exact
+let expect_extensions = [ expect; expect_exact ]
 
 let part_attr =
   Attribute.Floating.declare
@@ -59,7 +65,7 @@ let split_chunks ~fname phrases =
             assert_no_attributes attrs;
             let e =
               f
-                ~test_node_loc:loc
+                ~node_loc:loc
                 { loc_start; loc_end = loc.loc_start; loc_ghost = false }
                 ~part
                 ~phrases:(List.rev code_acc)
@@ -93,8 +99,7 @@ let extract_by_loc contents (loc : Location.t) =
 ;;
 
 let render_chunk : chunk -> string option =
-  fun { test_node; _ } ->
-  Test_node.For_mlt.expectation_of_t ~expect_node_formatting test_node
+  fun { test_node; _ } -> Test_node.For_mlt.expectation_of_t test_node
 ;;
 
 let declare_org_extension name =
@@ -223,9 +228,7 @@ let parse phrases ~contents =
            | Some body, None -> Chunks.fixed chunks loc (`Org body)
            | None, Some f ->
              assert_no_attributes attrs;
-             let chunk =
-               f Ppxlib.Location.none ~test_node_loc:loc ~part:None ~phrases:[]
-             in
+             let chunk = f Ppxlib.Location.none ~node_loc:loc ~part:None ~phrases:[] in
              Option.iter (render_chunk chunk) ~f:(fun body ->
                Chunks.fixed chunks loc (`Expect body))
            | None, None -> ()
