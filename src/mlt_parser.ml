@@ -28,8 +28,7 @@ let declare_extension name constructor =
     let test_node =
       let node_loc = Ppx_expect.compact_loc_of_ppxlib_location node_loc in
       constructor
-        ~formatting_flexibility:
-          (Expect_node_formatting.Flexibility.Flexible_modulo expect_node_formatting)
+        ~formatting_flexibility:Expect_node_formatting.Flexibility.Exactly_formatted
         ~node_loc
         ~located_payload
     in
