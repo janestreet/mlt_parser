@@ -1,6 +1,7 @@
 (library
  (name mlt_parser_test)
- (libraries core ppxlib expect_test_helpers_async expect_test_helpers_core
-   patdiff.expect_test_patdiff mlt_parser compiler-libs.common)
+ (libraries core ppxlib astlib expect_test_helpers_async
+   expect_test_helpers_core patdiff.expect_test_patdiff mlt_parser
+   compiler-libs.common)
  (preprocess
   (pps ppx_jane)))

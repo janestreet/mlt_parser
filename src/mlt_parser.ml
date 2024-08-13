@@ -1,7 +1,7 @@
 open Core
 open Poly
 open Ppxlib
-open Ppx_expect_runtime
+open Ppx_expect_runtime [@@alert "-ppx_expect_runtime"]
 
 type chunk =
   { part : string option
@@ -25,14 +25,14 @@ let declare_extension name constructor =
     Extension.Context.structure_item
     (Ppx_expect.maybe_string_payload ())
     (fun ~located_payload ~node_loc phrases_loc ~part ~phrases ->
-    let test_node =
-      let node_loc = Ppx_expect.compact_loc_of_ppxlib_location node_loc in
-      constructor
-        ~formatting_flexibility:Expect_node_formatting.Flexibility.Exactly_formatted
-        ~node_loc
-        ~located_payload
-    in
-    { part; phrases; test_node; node_loc; phrases_loc })
+       let test_node =
+         let node_loc = Ppx_expect.compact_loc_of_ppxlib_location node_loc in
+         constructor
+           ~formatting_flexibility:Expect_node_formatting.Flexibility.Exactly_formatted
+           ~node_loc
+           ~located_payload
+       in
+       { part; phrases; test_node; node_loc; phrases_loc })
 ;;
 
 let expect = declare_extension "expect" Test_node.Create.expect
@@ -243,10 +243,10 @@ let parse phrases ~contents =
     | Ptop_dir _ -> ());
   Chunks.locs_without_gaps chunks ~final_pos_cnum:(String.length contents)
   |> List.filter_map ~f:(function
-       | Fixed { loc = _; value = `Org body } -> Some (Org body)
-       | Fixed { loc = _; value = `Expect body } -> Some (Expect body)
-       | Ignored _ -> None
-       | Expansive loc ->
-         let code = extract_by_loc contents loc in
-         if String.is_empty code then None else Some (Code code))
+    | Fixed { loc = _; value = `Org body } -> Some (Org body)
+    | Fixed { loc = _; value = `Expect body } -> Some (Expect body)
+    | Ignored _ -> None
+    | Expansive loc ->
+      let code = extract_by_loc contents loc in
+      if String.is_empty code then None else Some (Code code))
 ;;

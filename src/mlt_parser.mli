@@ -1,11 +1,11 @@
 (** Code for parsing toplevel expect test files *)
 
 open Ppxlib
-open Ppx_expect_runtime
+open Ppx_expect_runtime [@@alert "-ppx_expect_runtime"]
 
 type chunk =
   { part : string option
-      (** The part the chunk is in, None if it's not in any
+  (** The part the chunk is in, None if it's not in any
                                     part. *)
   ; phrases : toplevel_phrase list
   ; test_node : Test_node.t

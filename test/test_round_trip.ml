@@ -6,9 +6,9 @@ let round_trip contents =
   |> Ppxlib.Parse.use_file
   |> Mlt_parser.parse ~contents
   |> List.map ~f:(function
-       | Org body -> sprintf "[%%%%org{|%s|}]" body
-       | Expect body -> sprintf "[%%%%expect {|%s|}]" body
-       | Code body -> sprintf "%s" body)
+    | Org body -> sprintf "[%%%%org{|%s|}]" body
+    | Expect body -> sprintf "[%%%%expect {|%s|}]" body
+    | Code body -> sprintf "%s" body)
   |> String.concat
   |> print_patdiff contents
 ;;
