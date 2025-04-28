@@ -4,9 +4,7 @@ open Ppxlib
 open Ppx_expect_runtime [@@alert "-ppx_expect_runtime"]
 
 type chunk =
-  { part : string option
-  (** The part the chunk is in, None if it's not in any
-                                    part. *)
+  { part : string option (** The part the chunk is in, None if it's not in any part. *)
   ; phrases : toplevel_phrase list
   ; test_node : Test_node.t
   ; node_loc : Ppxlib.Location.t
@@ -15,27 +13,31 @@ type chunk =
 
 val expect_node_formatting : Expect_node_formatting.t
 
-(** Recursively parses toplevel phrases (i.e., contiguous units of code separated by
-    [;;]) into "chunks", one chunk per [%%expect] statement.
+(** Recursively parses toplevel phrases (i.e., contiguous units of code separated by [;;])
+    into "chunks", one chunk per [%%expect] statement.
 
     For example if the mlt contents are:
 
     {[
       let x = 1 + 1;;
 
-      printf "%d" x + 2;;
+      printf "%d" x + 2
 
-      [%%expect {|
-     - : int: 4
-     |}];;
+      [%%expect
+        {|
+      - : int: 4
+      |}]
+      ;;
 
-      print_string "f" ^ "o" ^ "o";;
+      print_string "f" ^ "o" ^ "o"
 
-      [%%expect {|
-     - : string: "foo"
-     |}];;
+      [%%expect
+        {|
+      - : string: "foo"
+      |}]
+      ;;
 
-      print_string 3 + 3 + 3;;
+      print_string 3 + 3 + 3
     ]}
 
     then you'd have two chunks, where the first has two phrases (["x = 1 + 1"] and
@@ -48,8 +50,7 @@ val expect_node_formatting : Expect_node_formatting.t
 
     "part" refers to [@@@part "foo"] statements, which are arbitrary section breaks. Each
     chunk, and the trailing code, belongs to a part (which is just the empty string [""]
-    if none has been specified).
-*)
+    if none has been specified). *)
 val split_chunks
   :  fname:string
   -> toplevel_phrase list
@@ -65,28 +66,27 @@ type mlt_block =
     list of labeled blocks, so that for instance the following raw toplevel code:
 
     {[
-      [%%org {|
+      [%%org
+        {|
         Here comes a very /simple/ example.
-      |}];;
+      |}]
+      ;;
 
-      1 + 1;;
-      [%%expect {|
+      1 + 1
+
+      [%%expect
+        {|
       - : int: 2
-      |}];;
+      |}]
     ]}
 
     is parsed into its constituent parts:
 
     {[
-      [
-        (Org "Here comes a very /simple/ example.");
-        (Code "1 + 1");
-        (Expect "- : int: 2")
-      ]
+      [ Org "Here comes a very /simple/ example."; Code "1 + 1"; Expect "- : int: 2" ]
     ]}
 
     Note that we only care about these three kinds of element (org blocks, expect blocks,
     and regular OCaml code blocks); everything else -- including toplevel comments -- is
-    silently discarded.
-*)
+    silently discarded. *)
 val parse : toplevel_phrase list -> contents:string -> mlt_block list
