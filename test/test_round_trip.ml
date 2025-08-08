@@ -46,7 +46,7 @@ some output.
 |contents};
   [%expect
     {xxx|
-    -1,25 +1,24
+    === DIFF HUNK ===
       [%%org{|
       * Title
       ** Subtitle|}];;
