@@ -6,6 +6,7 @@ bug-reports: "https://github.com/janestreet/mlt_parser/issues"
 dev-repo: "git+https://github.com/janestreet/mlt_parser.git"
 doc: "https://ocaml.janestreet.com/ocaml-core/latest/doc/mlt_parser/index.html"
 license: "MIT"
+x-maintenance-intent: ["(latest)"]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
 ]

@@ -168,13 +168,15 @@ module Chunks = struct
 
   let create () = Queue.create ()
 
-  let locs_without_gaps t ~final_pos_cnum =
+  let%template locs_without_gaps t ~final_pos_cnum =
     let nonempty_loc loc_start loc_end : Location.t =
       assert (Int.( < ) loc_start.Lexing.pos_cnum loc_end.Lexing.pos_cnum);
       { loc_start; loc_end; loc_ghost = false }
     in
     let make_filler ~(prev : Location.t) ~(next : Location.t) : 'a Chunk.t option =
-      let cmp = [%compare: int] prev.loc_end.pos_cnum next.loc_start.pos_cnum in
+      let cmp =
+        ([%compare: int] [@mode local]) prev.loc_end.pos_cnum next.loc_start.pos_cnum
+      in
       match Ordering.of_int cmp with
       | Less -> Some (Expansive (nonempty_loc prev.loc_end next.loc_start))
       | Equal -> None
